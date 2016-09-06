@@ -9,6 +9,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -23,17 +25,17 @@ public class MainActivity extends AppCompatActivity implements BarcodeHelper.Dec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BarcodeHelper.getInstance(this).setDecodeListener(this);
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         ViewfinderView viewFinder = (ViewfinderView) findViewById(R.id.viewfinder);
-        SurfaceHolder surfaceHolder = ((SurfaceView) findViewById(R.id.preview_view)).getHolder();
-        BarcodeHelper.getInstance(this).setViewFinder(viewFinder);
-        BarcodeHelper.getInstance(this).setFurfaceHolder(surfaceHolder);
-        BarcodeHelper.getInstance(this).onResume();
+        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        BarcodeHelper.getInstance(this).onResume(surfaceView, viewFinder);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.google.zxing.client.android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
@@ -17,15 +19,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import eu.vranckaert.poc.barcode.MainActivity;
 import eu.vranckaert.poc.barcode.R;
 
 /**
+ * This class is intended as a helper class to easily setup bar code scanning features in your application.</br>
+ * First of all you need a layout file with a parent {@link android.widget.FrameLayout} and two childs:</br>
+ * <li>
+ *     <ul>SurfaceView (match_parent|match_parent)</ul>
+ *     <ul>com.google.zxing.client.android.ViewfinderView (match_parent|match_parent)</ul>
+ * </li>
+ * In your activity's {@link Activity#onResume()} call the {{@link #onResume(SurfaceView, ViewfinderView)}} method with those two views from your XML in order to setup the scanning and claim the camera etc.<br/>
+ * In your activity's {@link Activity#onPause()} call the {@link #onPause()} method to release the camera etc.<br/>
+ * Don't forget to modify your AndroidManifest.xml and add the permission {@link android.Manifest.permission#CAMERA} just outside the application-tag.</br>
+ * </br>
  * Created by dirkvranckaert on 05/09/16.
  */
-
 public class BarcodeHelper implements ICameraScanner, SurfaceHolder.Callback {
-    private String TAG = MainActivity.class.getSimpleName();
+    private String TAG = BarcodeHelper.class.getSimpleName();
 
     private static BarcodeHelper INSTANCE;
 
@@ -48,25 +58,10 @@ public class BarcodeHelper implements ICameraScanner, SurfaceHolder.Callback {
         return INSTANCE;
     }
 
-    public void restartPreviewAfterDelay(long delayMS) {
-        if (handler != null) {
-            handler.sendEmptyMessageDelayed(R.id.restart_preview, delayMS);
-        }
-    }
-
-    public void setViewFinder(ViewfinderView viewfinder) {
+    public void onResume(SurfaceView surfaceView, ViewfinderView viewfinder) {
+        this.surfaceHolder = surfaceView.getHolder();
         this.viewfinder = viewfinder;
-    }
 
-    public void setFurfaceHolder(SurfaceHolder surfaceHolder) {
-        this.surfaceHolder = surfaceHolder;
-    }
-
-    public void setDecodeListener(DecodeListener decodeListener) {
-        this.decodeListener = decodeListener;
-    }
-
-    public void onResume() {
         cameraManager = new CameraManager(context);
         viewfinder.setCameraManager(cameraManager);
 
@@ -90,6 +85,16 @@ public class BarcodeHelper implements ICameraScanner, SurfaceHolder.Callback {
         if (!hasSurface) {
             surfaceHolder.removeCallback(this);
         }
+    }
+
+    public void restartPreviewAfterDelay(long delayMS) {
+        if (handler != null) {
+            handler.sendEmptyMessageDelayed(R.id.restart_preview, delayMS);
+        }
+    }
+
+    public void setDecodeListener(DecodeListener decodeListener) {
+        this.decodeListener = decodeListener;
     }
 
     @Override
