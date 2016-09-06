@@ -200,8 +200,8 @@ public final class CameraManager {
                 return null;
             }
 
-            int width = findDesiredWidthInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
-            int height = findDesiredWidthInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
+            int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
+            int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
 
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y -height) / 2;
@@ -211,19 +211,8 @@ public final class CameraManager {
         return framingRect;
     }
 
-    private static int findDesiredWidthInRange(int resolution, int hardMin, int hardMax) {
+    private static int findDesiredDimensionInRange(int resolution, int hardMin, int hardMax) {
         int dim = 5 * resolution / 8; // Target 5/8 of each dimension
-        if (dim < hardMin) {
-            return hardMin;
-        }
-        if (dim > hardMax) {
-            return hardMax;
-        }
-        return dim;
-    }
-
-    private static int findDesiredHeightInRange(int resolution, int hardMin, int hardMax) {
-        int dim = 2 * resolution / 8; // Target 5/8 of each dimension
         if (dim < hardMin) {
             return hardMin;
         }
